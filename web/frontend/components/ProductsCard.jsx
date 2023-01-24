@@ -33,6 +33,21 @@ export function ProductsCard() {
     <Toast {...toastProps} onDismiss={() => setToastProps(emptyToastProps)} />
   );
 
+  const handleRemoval = async () => {
+    setIsLoading(true);
+    const response = await fetch("/api/products/drop");
+    if (response.ok) {
+      await refetchProductCount();
+      setToastProps({ content: "All products removed!" });
+    } else {
+      setIsLoading(false);
+      setToastProps({
+        content: "There was an error deleting products",
+        error: true,
+      });
+    }
+  };
+
   const handlePopulate = async () => {
     setIsLoading(true);
     const response = await fetch("/api/products/create");
@@ -74,6 +89,22 @@ export function ProductsCard() {
               </TextStyle>
             </DisplayText>
           </Heading>
+        </TextContainer>
+      </Card>
+      <Card
+        title="Product remover"
+        sectioned
+        primaryFooterAction={{
+          content: "Remove all your products",
+          onAction: handleRemoval,
+          loading: isLoading,
+        }}
+      >
+        <TextContainer spacing="loose">
+          <p>
+            Removes all the products in your store.
+            THIS ACTION IS PERMANENT!
+          </p>
         </TextContainer>
       </Card>
     </>

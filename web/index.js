@@ -34,6 +34,21 @@ app.use("/api/*", shopify.validateAuthenticatedSession());
 
 app.use(express.json());
 
+app.get("/api/products/drop", async (_req, res) => {
+  const products = await shopify.api.rest.Product.all({
+    session: res.locals.shopify.session,
+  });
+
+  products.forEach(async (item, index, arr) => {
+    await shopify.api.rest.Product.delete({
+      id: item.id,
+      session: res.locals.shopify.session,
+    });
+  })
+
+  res.status(200).send({ success: true });
+});
+
 app.get("/api/products/count", async (_req, res) => {
   const countData = await shopify.api.rest.Product.count({
     session: res.locals.shopify.session,
